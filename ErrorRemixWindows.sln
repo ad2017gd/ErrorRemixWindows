@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERMEditor", "LabelTrackConverter\ERMEditor.csproj", "{923DDD0E-296A-40EC-828B-DB521DD6C248}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERM", "ERM\ERM.csproj", "{EC37A9CA-14A4-473D-BF94-8A0028BA08EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{2CF7EB39-89D0-4438-A7C0-DFBD25F48DE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{923DDD0E-296A-40EC-828B-DB521DD6C248}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{923DDD0E-296A-40EC-828B-DB521DD6C248}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{923DDD0E-296A-40EC-828B-DB521DD6C248}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{923DDD0E-296A-40EC-828B-DB521DD6C248}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC37A9CA-14A4-473D-BF94-8A0028BA08EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC37A9CA-14A4-473D-BF94-8A0028BA08EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC37A9CA-14A4-473D-BF94-8A0028BA08EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC37A9CA-14A4-473D-BF94-8A0028BA08EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CF7EB39-89D0-4438-A7C0-DFBD25F48DE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CF7EB39-89D0-4438-A7C0-DFBD25F48DE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CF7EB39-89D0-4438-A7C0-DFBD25F48DE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CF7EB39-89D0-4438-A7C0-DFBD25F48DE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1E2BEC63-C666-4015-AD4C-563537190468}
+	EndGlobalSection
+EndGlobal

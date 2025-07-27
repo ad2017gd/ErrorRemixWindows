@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="ERMEditor.TaskDialogDesign"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:shared="clr-namespace:Shared;assembly=Shared"
+             xmlns:local="clr-namespace:ERMEditor"
+             Width="350"
+             mc:Ignorable="d">
+    <Border Width="350" BorderBrush="{DynamicResource SystemControlHighlightAccentBrush}" Background="{DynamicResource SystemControlBackgroundChromeWhiteBrush}" BorderThickness="1" CornerRadius="8,8,8,8">
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="8"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Border BorderThickness="0" Height="30" CornerRadius="8,8,0,0" BorderBrush="Transparent" Background="{DynamicResource SystemControlHighlightAccentBrush}">
+                </Border>
+
+                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Foreground="White" FontSize="12" Text="{Binding ERMWindow.WindowTitle}"></TextBlock>
+            </Grid>
+
+            <Grid Grid.Row="0" HorizontalAlignment="Right">
+                <Border BorderThickness="0" Height="30" Width="50" CornerRadius="0,8,0,0" BorderBrush="Transparent" Background="Red"></Border>
+                <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontSize="12">✖</TextBlock>
+
+            </Grid>
+
+            <!-- Canvas.Left="40" -->
+            <Grid Grid.Row="1" Margin="10,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Image VerticalAlignment="Top" Grid.Column="0" Margin="0,0,10,0" Source="{Binding ERMWindow.IconSource}" Width="32" Height="32">
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ERMWindow.HasIcon}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="0,0,0,16" TextWrapping="WrapWithOverflow" Foreground="#2b487b" Text="{Binding ERMWindow.Title}" FontSize="16">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ERMWindow.HasTitle}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <StackPanel Grid.Row="1" >
+
+                        <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Foreground="Black" Text="{Binding ERMWindow.Content}" FontSize="12"/>
+                        <ProgressBar VerticalAlignment="Center" Margin="0,8,8,0" Height="16" Value="{Binding ERMWindow.ProgressBarPercentage}">
+                            <ProgressBar.Style>
+                                <Style TargetType="ProgressBar">
+                                    <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    <Setter Property="IsIndeterminate" Value="False"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ERMWindow.ProgressBarType}" Value="{x:Static shared:BarType.Marquee}">
+                                            <Setter Property="IsIndeterminate" Value="True"></Setter>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ERMWindow.EnableProgressBar}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ProgressBar.Style>
+                        </ProgressBar>
+                    </StackPanel>
+                </Grid>
+
+            </Grid>
+
+            <Border Grid.Row="3" BorderThickness="0" CornerRadius="0,0,8,8" BorderBrush="Transparent" Background="#EEEEEE">
+            
+            <Grid Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <ItemsControl Grid.Column="1" Margin="5,5,5,5" ItemsSource="{Binding ERMWindow.Buttons}" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+
+                        <DataTemplate>
+                            <Border MinWidth="72" Margin="2,0,2,0"  Background="#FFFFFF" CornerRadius="4,4,4,4" BorderBrush="Silver" BorderThickness="1">
+                                <TextBlock FontSize="12" HorizontalAlignment="Center" Foreground="Black" Margin="5,2" Text="{Binding ButtonText}"></TextBlock>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+            </Border>
+
+        </Grid>
+    </Border>
+</UserControl>

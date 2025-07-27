@@ -1,0 +1,194 @@
+﻿<Window x:Class="ERMEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ERMEditor"
+        xmlns:shared="clr-namespace:Shared;assembly=Shared"
+        mc:Ignorable="d"
+        
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:TitleBar.Background="{DynamicResource ButtonBackground}"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        x:Name="ThisWindow"
+        Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
+        Title="Label track converter for ERW" Height="711" Width="1600">
+    <Window.Resources>
+        <local:ButtonConverter x:Key="ButtonConverter"></local:ButtonConverter>
+        <local:WindowConverter x:Key="WindowConverter"></local:WindowConverter>
+        <local:DefinedRelativeAxisConverter x:Key="DefinedRelativeAxisConverter"></local:DefinedRelativeAxisConverter>
+        <local:S2CPositionXConverter x:Key="S2CPositionXConverter"></local:S2CPositionXConverter>
+        <local:S2CPositionYConverter x:Key="S2CPositionYConverter"></local:S2CPositionYConverter>
+    </Window.Resources>
+    <Grid>
+
+        <TabControl SelectionChanged="TabControl_SelectionChanged">
+            <TabItem Header="Windows">
+                <Grid Margin="15,15,15,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="24"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="12"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <!-- Window position and preview -->
+                    <StackPanel Grid.Row="0" Orientation="Vertical">
+
+                        <TextBlock Foreground="{DynamicResource SystemControlForegroundBaseLowBrush}" TextWrapping="Wrap">*Preview may not be 100% accurate. Use the {Preview dialog} button for an accurate preview.</TextBlock>
+                        <ui:ThemeShadowChrome>
+                            <Canvas Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+                                <local:TaskDialogDesign ERMWindow="{Binding SelectedWindow, ElementName=ThisWindow}">
+                                </local:TaskDialogDesign>
+                            </Canvas>
+                        </ui:ThemeShadowChrome>
+                    </StackPanel>
+
+                    <!-- Window Listbox -->
+                    <StackPanel Grid.Row="2" Grid.Column="0">
+                        <ui:CommandBar FlowDirection="RightToLeft">
+                            <ui:AppBarButton Label="Remove" Icon="Delete"
+                                    Click="AppBarButton_Click_1" />
+                            <ui:AppBarButton Label="Add" Icon="Add"
+                                    Click="AppBarButton_Click" />
+                        </ui:CommandBar>
+                        <ListBox ItemsSource="{Binding Config.DefinedWindows}" SelectedValue="{Binding SelectedWindow}" SelectedIndex="{Binding SelectedWindowIndex}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding EditorDescription}"></TextBlock>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </StackPanel>
+
+                    <!-- Editor -->
+                    <ScrollViewer  Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+                        <StackPanel>
+                            <Button Click="PreviewButton_Click">Preview dialog</Button>
+                            <Line Height="16"></Line>
+                            <TextBox 
+                            ui:ControlHelper.PlaceholderText="Window title" 
+                            ui:ControlHelper.Header="Window title" 
+                            Text="{Binding SelectedWindow.WindowTitle, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            <TextBox 
+                            ui:ControlHelper.PlaceholderText="Blue header content" 
+                            ui:ControlHelper.Header="Main instruction / Blue header" 
+                            Text="{Binding SelectedWindow.Title, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            <TextBox 
+                            ui:ControlHelper.PlaceholderText="Content" 
+                            ui:ControlHelper.Header="Content" 
+                            Text="{Binding SelectedWindow.Content, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                            <ComboBox 
+                            ui:ControlHelper.PlaceholderText="Icon" 
+                            ui:ControlHelper.Header="Icon" 
+                            SelectedValue="{Binding SelectedWindow.Icon, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding SelectedWindow.AvailableIcons}"></ComboBox>
+                            <ComboBox 
+                            ui:ControlHelper.PlaceholderText="Custom system sound" 
+                            ui:ControlHelper.Header="Custom system sound" 
+                            SelectedValue="{Binding SelectedWindow.CustomSystemSound, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding SelectedWindow.CustomSounds}">
+                                <ComboBox.Style>
+                                    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedWindow.Icon, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ComboBox.Style>
+                            </ComboBox>
+                            <Line Height="16"></Line>
+                            <CheckBox Content="Enable progress bar"
+                            IsChecked="{Binding SelectedWindow.EnableProgressBar, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedWindow.EnableProgressBar, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <ComboBox 
+                                ui:ControlHelper.PlaceholderText="Bar type" 
+                                ui:ControlHelper.Header="Progress bar type" 
+                                SelectedValue="{Binding SelectedWindow.ProgressBarType, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding SelectedWindow.BarTypes}"></ComboBox>
+                                <ui:NumberBox 
+                            ui:ControlHelper.PlaceholderText="Percentage %" 
+                            ui:ControlHelper.Header="Progress bar percentage" 
+                            Text="{Binding SelectedWindow.ProgressBarPercentage, UpdateSourceTrigger=PropertyChanged}">
+                                    <ui:NumberBox.Style>
+                                        <Style TargetType="ui:NumberBox">
+                                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedWindow.ProgressBarType, UpdateSourceTrigger=PropertyChanged}" Value="{x:Static shared:BarType.Normal}">
+                                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ui:NumberBox.Style>
+                                </ui:NumberBox>
+                            </StackPanel>
+                            <Line Height="16"></Line>
+                            <TextBox 
+                            ui:ControlHelper.PlaceholderText="OK;Cancel" 
+                            ui:ControlHelper.Header="Buttons (separated;by;semicolons)" 
+                            Text="{Binding SelectedWindow.Buttons, Converter={StaticResource ButtonConverter}, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+
+                            <Line Height="24"></Line>
+
+                            <TextBox
+                            ui:ControlHelper.PlaceholderText="Window identifier" 
+                            ui:ControlHelper.Header="Window identifier" 
+                            Text="{Binding SelectedWindow.Identifier, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                </Grid>
+            </TabItem>
+            <TabItem Header="Timestamps">
+                <Grid Margin="15,15,15,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                        <ColumnDefinition Width="24"></ColumnDefinition>
+                        <ColumnDefinition Width="1*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="12"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+
+
+                    <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                        <local:AudioTimestamps x:Name="AudioTimestampsElement"></local:AudioTimestamps>
+                    </Grid>
+
+                    <!-- Editor -->
+                    <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" Grid.ColumnSpan="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="21*"/>
+                            <ColumnDefinition Width="764*"/>
+                        </Grid.ColumnDefinitions>
+                        <ContentPresenter Content="{Binding SelectedControl}" Grid.ColumnSpan="2" />
+                    </Grid>
+                    <StackPanel Grid.Row="3">
+                        <CheckBox IsChecked="{Binding UseOnionSkin}">Onion skin</CheckBox>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Export">
+                <Grid Margin="15,15,15,15">
+                    <TextBlock></TextBlock>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

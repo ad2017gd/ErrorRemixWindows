@@ -1,0 +1,218 @@
+﻿<UserControl x:Class="ERMEditor.ShowWindowControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ERMEditor"
+             mc:Ignorable="d" 
+             
+             x:Name="ThisWindow"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+
+        <local:DefinedWindowIdentifierConverter x:Key="DefinedWindowIdentifierConverter"></local:DefinedWindowIdentifierConverter>
+        <local:ButtonConverter x:Key="ButtonConverter"></local:ButtonConverter>
+        <local:WindowConverter x:Key="WindowConverter"></local:WindowConverter>
+        <local:DefinedRelativeAxisConverter x:Key="DefinedRelativeAxisConverter"></local:DefinedRelativeAxisConverter>
+        <local:S2CPositionXConverter x:Key="S2CPositionXConverter"></local:S2CPositionXConverter>
+        <local:S2CPositionYConverter x:Key="S2CPositionYConverter"></local:S2CPositionYConverter>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="12"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Panel.ZIndex="2" IsHitTestVisible="False">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" FontFamily="Monospace">+</TextBlock>
+        </Grid>
+        <ui:ThemeShadowChrome Grid.Row="0" Grid.Column="0">
+            <Viewbox Stretch="Uniform">
+                <Canvas Width="{Binding ScreenWidth}" Height="{Binding ScreenHeight}" ClipToBounds="True"  Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}" x:Name="TimestampCanvas">
+                    <local:TaskDialogDesign Opacity="0.2" x:Name="OnionDialog2" ERMWindow="{Binding Path=DataContext.PreviousTimestamp2.Data.WindowIdentifier, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}, Converter={StaticResource WindowConverter}}">
+                        <local:TaskDialogDesign.Style>
+                            <Style TargetType="local:TaskDialogDesign">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+
+                                <Setter Property="Canvas.Top">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource S2CPositionYConverter}">
+                                            <Binding Path="DataContext.PreviousTimestamp2" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="DataContext.PreviousTimestamp2.Data" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="ActualHeight" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="."></Binding>
+                                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Canvas.Left">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource S2CPositionXConverter}">
+                                            <Binding Path="DataContext.PreviousTimestamp2" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="DataContext.PreviousTimestamp2.Data" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="ActualWidth" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="."></Binding>
+                                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=DataContext.UseOnionSkin, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=DataContext.HasPreviousTimestamp2, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </local:TaskDialogDesign.Style>
+                    </local:TaskDialogDesign>
+                    <local:TaskDialogDesign Opacity="0.5" x:Name="OnionDialog" ERMWindow="{Binding DataContext.PreviousTimestamp.Data.WindowIdentifier, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}, Converter={StaticResource WindowConverter}}">
+                        <local:TaskDialogDesign.Style>
+                            <Style TargetType="local:TaskDialogDesign">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+
+                                <Setter Property="Canvas.Top">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource S2CPositionYConverter}">
+                                            <Binding Path="DataContext.PreviousTimestamp" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="DataContext.PreviousTimestamp.Data" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="DataContext.ActualHeight" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="."></Binding>
+                                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Canvas.Left">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource S2CPositionXConverter}">
+                                            <Binding Path="DataContext.PreviousTimestamp" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="DataContext.PreviousTimestamp.Data" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="ActualWidth" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="."></Binding>
+                                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=DataContext.UseOnionSkin, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=DataContext.HasPreviousTimestamp, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"></Setter>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </local:TaskDialogDesign.Style>
+                    </local:TaskDialogDesign>
+                    <local:TaskDialogDesign x:Name="TimestampDialog" MouseMove="TaskDialogDesign_MouseMove" ERMWindow="{Binding DataContext.SelectedTimestamp.Data.WindowIdentifier, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}, Converter={StaticResource WindowConverter}}">
+                        <local:TaskDialogDesign.Style>
+                            <Style>
+                                <Setter Property="Canvas.Top">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource S2CPositionYConverter}">
+                                            <Binding Path="DataContext.SelectedTimestamp" UpdateSourceTrigger="PropertyChanged" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="DataContext.SelectedTimestamp.Data" UpdateSourceTrigger="PropertyChanged" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="ActualHeight" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="."></Binding>
+                                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Canvas.Left">
+                                    <Setter.Value>
+                                        <MultiBinding Converter="{StaticResource S2CPositionXConverter}">
+                                            <Binding Path="DataContext.SelectedTimestamp" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="DataContext.SelectedTimestamp.Data" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="ActualWidth" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                            <Binding Path="."></Binding>
+                                            <Binding Path="." RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:ShowWindowControl}}"></Binding>
+                                        </MultiBinding>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </local:TaskDialogDesign.Style>
+                    </local:TaskDialogDesign>
+                </Canvas>
+            </Viewbox>
+
+        </ui:ThemeShadowChrome>
+        <ScrollViewer Grid.Column="2">
+            <StackPanel>
+                <Button x:Name="PreviewTimestamp" Click="PreviewTimestamp_Click">Preview</Button>
+                <Line Height="24"/>
+                <ComboBox
+ui:ControlHelper.PlaceholderText="Window identifier" 
+ui:ControlHelper.Header="Window to display" 
+ItemsSource="{Binding Config.DefinedWindows, Converter={StaticResource DefinedWindowIdentifierConverter}, UpdateSourceTrigger=PropertyChanged}" SelectedValue="{Binding SelectedTimestamp.Data.WindowIdentifier}"></ComboBox>
+                <TextBox
+ui:ControlHelper.PlaceholderText="(none)" 
+ui:ControlHelper.Header="Window group name" 
+Text="{Binding SelectedTimestamp.Data.Group}"></TextBox>
+                <CheckBox
+Content="Use relative positioning" 
+IsChecked="{Binding SelectedTimestamp.Data.IsRelative}"></CheckBox>
+
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedTimestamp.Data.IsRelative}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"></Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                </StackPanel>
+
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Setters>
+                                        <Setter Property="Visibility" Value="Visible"></Setter>
+                                    </MultiDataTrigger.Setters>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding SelectedTimestamp.Data.IsRelative}" Value="True"></Condition>
+                                    </MultiDataTrigger.Conditions>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <ComboBox
+    ui:ControlHelper.PlaceholderText="X axis relative to" 
+    ui:ControlHelper.Header="X axis relative to" 
+    ItemsSource="{Binding SelectedTimestamp.Data.AvailableRelativeAxis}" SelectedValue="{Binding SelectedTimestamp.Data.XAxis}"></ComboBox>
+                    <ComboBox
+    ui:ControlHelper.PlaceholderText="Y axis relative to" 
+    ui:ControlHelper.Header="Y axis relative to" 
+    ItemsSource="{Binding SelectedTimestamp.Data.AvailableRelativeAxis}" SelectedValue="{Binding SelectedTimestamp.Data.YAxis}"></ComboBox>
+                    <ComboBox
+    ui:ControlHelper.PlaceholderText="Self X axis relative to" 
+    ui:ControlHelper.Header="Self X axis relative to" 
+    ItemsSource="{Binding SelectedTimestamp.Data.AvailableRelativeAxis}" SelectedValue="{Binding SelectedTimestamp.Data.SelfXAxis}"></ComboBox>
+
+                    <ComboBox
+    ui:ControlHelper.PlaceholderText="Self Y axis relative to" 
+    ui:ControlHelper.Header="Self Y axis relative to" 
+    ItemsSource="{Binding SelectedTimestamp.Data.AvailableRelativeAxis}" SelectedValue="{Binding SelectedTimestamp.Data.SelfYAxis}"></ComboBox>
+                </StackPanel>
+
+                <ui:NumberBox
+    ui:ControlHelper.PlaceholderText="X Position" 
+    ui:ControlHelper.Header="X Position" 
+    Text="{Binding SelectedTimestamp.Data.X}"></ui:NumberBox>
+                <ui:NumberBox
+    ui:ControlHelper.PlaceholderText="Y Position" 
+    ui:ControlHelper.Header="Y Position" 
+    Text="{Binding SelectedTimestamp.Data.Y}"></ui:NumberBox>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+    
+</UserControl>
