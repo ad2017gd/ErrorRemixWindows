@@ -1,4 +1,4 @@
-﻿using ERM;
+﻿using ERW;
 using Shared;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ERMEditor
+namespace ERWEditor
 {
     /// <summary>
     /// Interaction logic for ShowWindowControl.xaml
@@ -93,11 +93,11 @@ namespace ERMEditor
                         finalY = TimestampCanvas.ActualHeight / 2 - diagHeight / 2;
                         finalX = TimestampCanvas.ActualWidth / 2 - diagWidth / 2;
                     }
-                    ERMShowWindow wnd = (MainWindow.Instance.SelectedTimestamp.Data as ERMShowWindow);
-                    wnd.X = (int)PositionUtils.CoordsToScreen(ERM.TaskDialog.AbsoluteToRelative((int)finalX, wnd.IsRelative ? wnd.XAxis : RelativeAxis.Start, wnd.IsRelative ? wnd.SelfXAxis : RelativeAxis.Start, (int)diagWidth, (int)TimestampCanvas.ActualWidth),
-                        TimestampCanvas.ActualWidth, ERM.TaskDialog.GetScreenDimensions().X);
-                    wnd.Y = (int)PositionUtils.CoordsToScreen(ERM.TaskDialog.AbsoluteToRelative((int)finalY, wnd.IsRelative ? wnd.YAxis : RelativeAxis.Start, wnd.IsRelative ? wnd.SelfYAxis : RelativeAxis.Start, (int)diagHeight, (int)TimestampCanvas.ActualHeight),
-                        TimestampCanvas.ActualHeight, ERM.TaskDialog.GetScreenDimensions().Y);
+                    ERWShowWindow wnd = (MainWindow.Instance.SelectedTimestamp.Data as ERWShowWindow);
+                    wnd.X = (int)PositionUtils.CoordsToScreen(ERW.TaskDialog.AbsoluteToRelative((int)finalX, wnd.IsRelative ? wnd.XAxis : RelativeAxis.Start, wnd.IsRelative ? wnd.SelfXAxis : RelativeAxis.Start, (int)diagWidth, (int)TimestampCanvas.ActualWidth),
+                        TimestampCanvas.ActualWidth, ERW.TaskDialog.GetScreenDimensions().X);
+                    wnd.Y = (int)PositionUtils.CoordsToScreen(ERW.TaskDialog.AbsoluteToRelative((int)finalY, wnd.IsRelative ? wnd.YAxis : RelativeAxis.Start, wnd.IsRelative ? wnd.SelfYAxis : RelativeAxis.Start, (int)diagHeight, (int)TimestampCanvas.ActualHeight),
+                        TimestampCanvas.ActualHeight, ERW.TaskDialog.GetScreenDimensions().Y);
                     shape.CaptureMouse();
                 }
                 else
@@ -112,7 +112,7 @@ namespace ERMEditor
         {
             
             if (MainWindow.Instance.SelectedTimestamp is null) return;
-            var act = (MainWindow.Instance.SelectedTimestamp.Data as ERMShowWindow);
+            var act = (MainWindow.Instance.SelectedTimestamp.Data as ERWShowWindow);
             var wnd = WindowConverter.FindWindow(act.WindowIdentifier);
             if (wnd is null) return;
             var task = new TaskDialog(wnd);

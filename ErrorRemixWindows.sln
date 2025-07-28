@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERMEditor", "LabelTrackConverter\ERMEditor.csproj", "{923DDD0E-296A-40EC-828B-DB521DD6C248}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERWEditor", "LabelTrackConverter\ERWEditor.csproj", "{923DDD0E-296A-40EC-828B-DB521DD6C248}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERM", "ERM\ERM.csproj", "{EC37A9CA-14A4-473D-BF94-8A0028BA08EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERW", "ERM\ERW.csproj", "{EC37A9CA-14A4-473D-BF94-8A0028BA08EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{2CF7EB39-89D0-4438-A7C0-DFBD25F48DE8}"
 EndProject

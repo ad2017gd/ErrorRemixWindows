@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace ERWEditor
 {
     /// <summary>
-    /// Interaction logic for ClearWindowControl.xaml
+    /// Interaction logic for SetVisibilityControl.xaml
     /// </summary>
-    public partial class ClearWindowControl : UserControl
+    public partial class SetVisibilityControl : UserControl
     {
-        public ClearWindowControl()
+        public SetVisibilityControl()
         {
             InitializeComponent();
         }

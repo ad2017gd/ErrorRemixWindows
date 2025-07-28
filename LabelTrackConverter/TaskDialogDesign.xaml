@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="ERMEditor.TaskDialogDesign"
+﻿<UserControl x:Class="ERWEditor.TaskDialogDesign"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:shared="clr-namespace:Shared;assembly=Shared"
-             xmlns:local="clr-namespace:ERMEditor"
+             xmlns:local="clr-namespace:ERWEditor"
              Width="350"
              mc:Ignorable="d">
     <Border Width="350" BorderBrush="{DynamicResource SystemControlHighlightAccentBrush}" Background="{DynamicResource SystemControlBackgroundChromeWhiteBrush}" BorderThickness="1" CornerRadius="8,8,8,8">
@@ -19,7 +19,7 @@
                 <Border BorderThickness="0" Height="30" CornerRadius="8,8,0,0" BorderBrush="Transparent" Background="{DynamicResource SystemControlHighlightAccentBrush}">
                 </Border>
 
-                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Foreground="White" FontSize="12" Text="{Binding ERMWindow.WindowTitle}"></TextBlock>
+                <TextBlock Margin="10,0,0,0" VerticalAlignment="Center" Foreground="White" FontSize="12" Text="{Binding ERWWindow.WindowTitle}"></TextBlock>
             </Grid>
 
             <Grid Grid.Row="0" HorizontalAlignment="Right">
@@ -39,12 +39,12 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-                <Image VerticalAlignment="Top" Grid.Column="0" Margin="0,0,10,0" Source="{Binding ERMWindow.IconSource}" Width="32" Height="32">
+                <Image VerticalAlignment="Top" Grid.Column="0" Margin="0,0,10,0" Source="{Binding ERWWindow.IconSource}" Width="32" Height="32">
                     <Image.Style>
                         <Style TargetType="Image">
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ERMWindow.HasIcon}" Value="True">
+                                <DataTrigger Binding="{Binding ERWWindow.HasIcon}" Value="True">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -56,12 +56,12 @@
                         <RowDefinition Height="Auto"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Margin="0,0,0,16" TextWrapping="WrapWithOverflow" Foreground="#2b487b" Text="{Binding ERMWindow.Title}" FontSize="16">
+                    <TextBlock Grid.Row="0" Margin="0,0,0,16" TextWrapping="WrapWithOverflow" Foreground="#2b487b" Text="{Binding ERWWindow.Title}" FontSize="16">
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Setter Property="Visibility" Value="Collapsed"></Setter>
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding ERMWindow.HasTitle}" Value="True">
+                                    <DataTrigger Binding="{Binding ERWWindow.HasTitle}" Value="True">
                                         <Setter Property="Visibility" Value="Visible"></Setter>
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -70,17 +70,17 @@
                     </TextBlock>
                     <StackPanel Grid.Row="1" >
 
-                        <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Foreground="Black" Text="{Binding ERMWindow.Content}" FontSize="12"/>
-                        <ProgressBar VerticalAlignment="Center" Margin="0,8,8,0" Height="16" Value="{Binding ERMWindow.ProgressBarPercentage}">
+                        <TextBlock Margin="0,0,0,8" TextWrapping="Wrap" Foreground="Black" Text="{Binding ERWWindow.Content}" FontSize="12"/>
+                        <ProgressBar VerticalAlignment="Center" Margin="0,8,8,0" Height="16" Value="{Binding ERWWindow.ProgressBarPercentage}">
                             <ProgressBar.Style>
                                 <Style TargetType="ProgressBar">
                                     <Setter Property="Visibility" Value="Collapsed"></Setter>
                                     <Setter Property="IsIndeterminate" Value="False"></Setter>
                                     <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ERMWindow.ProgressBarType}" Value="{x:Static shared:BarType.Marquee}">
+                                        <DataTrigger Binding="{Binding ERWWindow.ProgressBarType}" Value="{x:Static shared:BarType.Marquee}">
                                             <Setter Property="IsIndeterminate" Value="True"></Setter>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding ERMWindow.EnableProgressBar}" Value="True">
+                                        <DataTrigger Binding="{Binding ERWWindow.EnableProgressBar}" Value="True">
                                             <Setter Property="Visibility" Value="Visible"></Setter>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -99,7 +99,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <ItemsControl Grid.Column="1" Margin="5,5,5,5" ItemsSource="{Binding ERMWindow.Buttons}" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <ItemsControl Grid.Column="1" Margin="5,5,5,5" ItemsSource="{Binding ERWWindow.Buttons}" VerticalAlignment="Center" HorizontalAlignment="Right">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Horizontal"/>

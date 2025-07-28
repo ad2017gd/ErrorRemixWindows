@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ERMEditor
+namespace ERWEditor
 {
     /// <summary>
     /// Interaction logic for TaskDialogDesign.xaml
@@ -28,15 +28,15 @@ namespace ERMEditor
         public event PropertyChangedEventHandler? PropertyChanged;
 
 
-        public ERMWindow ERMWindow
+        public ERWWindow ERWWindow
         {
-            get { return (ERMWindow)GetValue(WindowProperty); }
+            get { return (ERWWindow)GetValue(WindowProperty); }
             set { SetValue(WindowProperty, value); }
         }
         public static readonly DependencyProperty WindowProperty
             = DependencyProperty.Register(
-                  "ERMWindow",
-                  typeof(ERMWindow),
+                  "ERWWindow",
+                  typeof(ERWWindow),
                   typeof(TaskDialogDesign),
                   new FrameworkPropertyMetadata(
             null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsRender));

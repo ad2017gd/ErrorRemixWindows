@@ -1,9 +1,9 @@
-﻿<ContextMenu x:Class="ERMEditor.TimestampsContextMenu"
+﻿<ContextMenu x:Class="ERWEditor.TimestampsContextMenu"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ERMEditor"
+             xmlns:local="clr-namespace:ERWEditor"
                 xmlns:ui="http://schemas.modernwpf.com/2019"
              Opened="ContextMenu_Opened"
              mc:Ignorable="d" 
@@ -17,7 +17,19 @@
         <MenuItem Header="Show window" x:Name="ShowWindow" Click="ShowWindow_Click">
 
         </MenuItem>
-        <MenuItem Header="Hide window(s)" x:Name="HideWindow" Click="HideWindow_Click">
+        <MenuItem Header="Close window(s)" x:Name="HideWindow" Click="HideWindow_Click">
+
+        </MenuItem>
+        <MenuItem Header="Set progressbar %" x:Name="SetPercentage" Click="SetPercentage_Click">
+
+        </MenuItem>
+        <MenuItem Header="Set visibility" x:Name="SetVisibility" Click="SetVisibility_Click">
+
+        </MenuItem>
+        <MenuItem Header="Move to x,y" x:Name="SetCoords" Click="SetCoords_Click">
+
+        </MenuItem>
+        <MenuItem Header="Animate" x:Name="Animate" Click="Animate_Click">
 
         </MenuItem>
     </MenuItem>

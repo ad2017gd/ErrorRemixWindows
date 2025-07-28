@@ -12,7 +12,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Diagnostics.CodeAnalysis;
-using ERM;
+using ERW;
 using System.Media;
 using PropertyChanged;
 using System;
@@ -80,7 +80,7 @@ namespace Shared
     }
 
 
-    public class ERMButton : INotifyPropertyChanged
+    public class ERWButton : INotifyPropertyChanged
     {
         public string ButtonText { get; set; } = string.Empty;
 
@@ -92,7 +92,7 @@ namespace Shared
         Marquee
     }
 
-    public class ERMWindow : INotifyPropertyChanged
+    public class ERWWindow : INotifyPropertyChanged
     {
 
         private static int id = 0;
@@ -103,7 +103,7 @@ namespace Shared
         public string Footer { get; set; } = String.Empty;
         public TaskDialogIconExtended Icon { get; set; } = 0;
         public string CustomSystemSound { get; set; } = "None";
-        public BindingList<ERMButton> Buttons { get; set; } = new BindingList<ERMButton>() { new() {
+        public BindingList<ERWButton> Buttons { get; set; } = new BindingList<ERWButton>() { new() {
             ButtonText = "OK"
         }};
         public bool EnableProgressBar { get; set; } = false;
@@ -187,20 +187,28 @@ namespace Shared
     }
 
 
-    public enum ERMActionEnum
+    public enum ERWActionEnum
     {
         ShowWindow,
         ClearWindow,
-        PlaySystemSound
+        SetPercentage,
+        SetVisibility,
+        GoTo,
+        Animate
     }
 
-    [JsonDerivedType(typeof(ERMShowWindow))]
-    [JsonDerivedType(typeof(ERMClearWindow))]
-    public abstract class ERMAction : INotifyPropertyChanged
+    [JsonDerivedType(typeof(ERWShowWindow))]
+    [JsonDerivedType(typeof(ERWClearWindow))]
+    [JsonDerivedType(typeof(ERWSetPercentage))]
+    [JsonDerivedType(typeof(ERWSetVisibility))]
+    [JsonDerivedType(typeof(ERWGoTo))]
+    [JsonDerivedType(typeof(ERWAnimate))]
+
+    public abstract class ERWAction : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
     }
-    public class ERMShowWindow : ERMAction {
+    public class ERWShowWindow : ERWAction {
         public string WindowIdentifier { get; set; } = String.Empty;
         public string Group { get; set; } = string.Empty;
         public bool IsRelative { get; set; } = true;
@@ -218,17 +226,48 @@ namespace Shared
         
     }
 
-    public class ERMClearWindow : ERMAction
+    public class ERWClearWindow : ERWAction
     {
         public string Group { get; set; } = string.Empty;
 
     }
 
-    public class ERMTimestamp : INotifyPropertyChanged
+    public class ERWSetPercentage : ERWAction
     {
-        public ERMActionEnum Action { get; set; } = ERMActionEnum.ShowWindow;
+        public string Group { get; set; } = string.Empty;
+        public int Percentage { get; set; } = 0;
 
-        public ERMAction Data { get; set; } = null;
+    }
+    public class ERWSetVisibility : ERWAction
+    {
+        public string Group { get; set; } = string.Empty;
+        public bool Visible { get; set; } = true;
+
+    }
+    public class ERWGoTo : ERWAction
+    {
+        public string Group { get; set; } = string.Empty;
+        public bool Random { get; set; } = false;
+        public int X { get; set; }
+        public int Y { get; set; }
+
+    }
+    public class ERWAnimate : ERWAction
+    {
+        public string Group { get; set; } = string.Empty;
+        public string X { get; set; } = string.Empty;
+        public string Y { get; set; } = string.Empty;
+        public string Percentage { get; set; } = string.Empty;
+        public double Duration { get; set; } = 0;
+        public int FPS { get; set; } = 25;
+
+    }
+
+    public class ERWTimestamp : INotifyPropertyChanged
+    {
+        public ERWActionEnum Action { get; set; } = ERWActionEnum.ShowWindow;
+
+        public ERWAction Data { get; set; } = null;
 
         public TimeSpan Timestamp { get; set; } = TimeSpan.Zero;
 
@@ -241,7 +280,7 @@ namespace Shared
         [JsonIgnore]
         public bool Executed { get; set; } = false;
 
-        public ERMTimestamp()
+        public ERWTimestamp()
         {
         }
 
@@ -258,10 +297,10 @@ namespace Shared
 
 
 
-    public class ERMJson : INotifyPropertyChanged
+    public class ERWJson : INotifyPropertyChanged
     {
-        public BindingList<ERMWindow> DefinedWindows { get; set; } = new BindingList<ERMWindow>();
-        public BindingList<ERMTimestamp> Timestamps { get; set; } = new BindingList<ERMTimestamp>()
+        public BindingList<ERWWindow> DefinedWindows { get; set; } = new BindingList<ERWWindow>();
+        public BindingList<ERWTimestamp> Timestamps { get; set; } = new BindingList<ERWTimestamp>()
         {
             
         };
@@ -277,7 +316,7 @@ namespace Shared
         }
 
 
-        public ERMJson()
+        public ERWJson()
         {
             Init();
         }

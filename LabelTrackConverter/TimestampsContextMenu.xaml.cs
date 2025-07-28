@@ -18,7 +18,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Vanara.PInvoke;
 
-namespace ERMEditor
+namespace ERWEditor
 {
     /// <summary>
     /// Interaction logic for TimestampsContextMenu.xaml
@@ -43,7 +43,7 @@ namespace ERMEditor
 
         private void MenuItem_Click_1(object sender, RoutedEventArgs e)
         {
-            MainWindow.Instance.DeleteTimestamp((Timestamp as StackPanel).DataContext as ERMTimestamp);
+            MainWindow.Instance.DeleteTimestamp((Timestamp as StackPanel).DataContext as ERWTimestamp);
         }
 
         private void ContextMenu_Opened(object sender, RoutedEventArgs e)
@@ -54,21 +54,61 @@ namespace ERMEditor
 
         private void ShowWindow_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Config.Timestamps.Add(new ERMTimestamp()
+            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
             {
                 Timestamp = timeAtClick,
-                Action = ERMActionEnum.ShowWindow,
-                Data = new ERMShowWindow()
+                Action = ERWActionEnum.ShowWindow,
+                Data = new ERWShowWindow()
             });
         }
 
         private void HideWindow_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Config.Timestamps.Add(new ERMTimestamp()
+            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
             {
                 Timestamp = timeAtClick,
-                Action = ERMActionEnum.ClearWindow,
-                Data = new ERMClearWindow()
+                Action = ERWActionEnum.ClearWindow,
+                Data = new ERWClearWindow()
+            });
+        }
+
+        private void SetPercentage_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            {
+                Timestamp = timeAtClick,
+                Action = ERWActionEnum.SetPercentage,
+                Data = new ERWSetPercentage()
+            });
+        }
+
+        private void SetVisibility_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            {
+                Timestamp = timeAtClick,
+                Action = ERWActionEnum.SetVisibility,
+                Data = new ERWSetVisibility()
+            });
+        }
+
+        private void SetCoords_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            {
+                Timestamp = timeAtClick,
+                Action = ERWActionEnum.GoTo,
+                Data = new ERWGoTo()
+            });
+        }
+
+        private void Animate_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            {
+                Timestamp = timeAtClick,
+                Action = ERWActionEnum.Animate,
+                Data = new ERWAnimate()
             });
         }
     }

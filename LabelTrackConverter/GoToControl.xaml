@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="ERWEditor.GoToControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ERWEditor" xmlns:ui="http://schemas.modernwpf.com/2019"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <TextBox
+ui:ControlHelper.PlaceholderText="Window group" 
+ui:ControlHelper.Header="Window group" 
+Text="{Binding SelectedTimestamp.Data.Group}"></TextBox>
+        <CheckBox Content="Random position?" IsChecked="{Binding SelectedTimestamp.Data.Random}"></CheckBox>
+        <StackPanel Orientation="Horizontal">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedTimestamp.Data.Random}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+            <ui:NumberBox Margin="0,0,8,0" ui:ControlHelper.PlaceholderText="X" 
+ui:ControlHelper.Header="X" 
+Value="{Binding SelectedTimestamp.Data.X}"></ui:NumberBox>
+            
+            <ui:NumberBox ui:ControlHelper.PlaceholderText="Y" 
+ui:ControlHelper.Header="Y" 
+Value="{Binding SelectedTimestamp.Data.Y}"></ui:NumberBox>
+        </StackPanel>
+        
+    </StackPanel>
+</UserControl>

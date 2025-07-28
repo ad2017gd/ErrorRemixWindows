@@ -10,18 +10,18 @@ using Vanara.PInvoke;
 using Shared;
 using System.Text.Json;
 
-namespace ERM
+namespace ERW
 {
     public class Options
     {
-        [Option("ermsetfile", Required = false)]
+        [Option("erwsetfile", Required = false)]
         public string FileLocation { get; set; } = string.Empty;
     }
 
    
-    public static class ERMProgram
+    public static class ERWProgram
     {
-        static ERMJson? jsonData; 
+        static ERWJson? jsonData; 
 
         public static void Main(string[] args)
         {
@@ -40,9 +40,9 @@ namespace ERM
             ChildDiag.Move(500, 500).MoveRelative(0,0,RelativeAxis.Center, RelativeAxis.Center, RelativeAxis.Center, RelativeAxis.Center);
             Console.ReadLine();
 
-            if (File.Exists("erm.json"))
+            if (File.Exists("erw.json"))
             {
-                jsonData = JsonSerializer.Deserialize<ERMJson>(File.ReadAllText("erm.json"));
+                jsonData = JsonSerializer.Deserialize<ERWJson>(File.ReadAllText("erw.json"));
             } else
             {
                 return;

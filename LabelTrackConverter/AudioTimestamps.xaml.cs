@@ -1,9 +1,24 @@
-﻿using Shared;
+﻿using CSCore;
+using CSCore.Codecs;
+using CSCore.CoreAudioAPI;
+using CSCore.SoundOut;
+using ERW;
+using Microsoft.Win32;
+using ModernWpf;
+using NAudio.Utils;
+using PropertyChanged;
+using Shared;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,28 +26,13 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using PropertyChanged;
-
-using Microsoft.Win32;
-using System.Globalization;
-using System.ComponentModel;
-using NAudio.Utils;
-using System.Diagnostics;
-using System.Timers;
 using System.Windows.Threading;
-using ModernWpf;
 using static Vanara.PInvoke.ComCtl32;
-using CSCore;
-using CSCore.Codecs;
-using CSCore.SoundOut;
-using CSCore.CoreAudioAPI;
-using System.Windows.Media.Media3D;
-using System.Threading;
-using ERM;
 
-namespace ERMEditor
+namespace ERWEditor
 {
     public class TimestampConverter : IMultiValueConverter
     {
@@ -154,11 +154,11 @@ namespace ERMEditor
 
         public bool IsPreview { get; set; } = false;
         private List<TaskDialog> opened = new List<TaskDialog>();
-        private IEnumerator<ERMTimestamp> enumerator;
-        private ERMTimestamp last;
+        private IEnumerator<ERWTimestamp> enumerator;
+        private ERWTimestamp last;
 
         [DependsOn(nameof(MainWindow.Config))]
-        public ERMJson Config { get => MainWindow.Config; }
+        public ERWJson Config { get => MainWindow.Config; }
 
         public AudioTimestamps()
         {
@@ -226,29 +226,144 @@ namespace ERMEditor
             if (last is null) return;
             if(AudioPosition > last.Timestamp)
             {
-                if (last is null) return;
-                var act = (last.Data as ERMShowWindow);
+                var actual = last;
                 enumerator.MoveNext();
                 last = enumerator.Current;
-                Task.Run(() =>
+
+
+                var random = new Random();
+                switch (actual.Action)
                 {
-                    var wnd = WindowConverter.FindWindow(act.WindowIdentifier);
-                    if (wnd is null) return;
-                    var task = new ERM.TaskDialog(wnd);
-                    opened.Add(task);
-                    task.WaitAsyncForHWND().ContinueWith((t) =>
-                    {
-                        if (act.IsRelative)
+                    case ERWActionEnum.ShowWindow:
                         {
-                            task.MoveRelative(act.X, act.Y, act.XAxis, act.YAxis, act.SelfXAxis, act.SelfYAxis);
+                            var act = actual.Data as ERWShowWindow;
+                            Task.Run(() =>
+                            {
+                                var wnd = WindowConverter.FindWindow(act.WindowIdentifier);
+                                if (wnd is null) return;
+                                var task = new ERW.TaskDialog(wnd, act);
+                                opened.Add(task);
+                                task.WaitAsyncForHWND().ContinueWith((t) =>
+                                {
+                                    if (act.IsRelative)
+                                    {
+                                        task.MoveRelative(act.X, act.Y, act.XAxis, act.YAxis, act.SelfXAxis, act.SelfYAxis);
+                                    }
+                                    else
+                                    {
+                                        task.Move(act.X, act.Y);
+                                    }
+                                });
+
+                            });
+                            break;
                         }
-                        else
+                    case ERWActionEnum.ClearWindow:
                         {
-                            task.Move(act.X, act.Y);
+                            var act = actual.Data as ERWClearWindow;
+                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
+
+                            toClose.ToList().ForEach(x => x.Close());
+                            break;
                         }
-                    });
-                    
-                });
+                    case ERWActionEnum.SetPercentage:
+                        {
+                            var act = actual.Data as ERWSetPercentage;
+                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
+
+                            toClose.ToList().ForEach(x => x.SetProgressBarPercentage(act.Percentage));
+                            break;
+                        }
+                    case ERWActionEnum.SetVisibility:
+                        {
+                            var act = actual.Data as ERWSetVisibility;
+                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
+
+                            toClose.ToList().ForEach(x => {
+                                if (act.Visible) x.ShowCompletely(); else x.HideCompletely();
+                                    });
+                            break;
+                        }
+                    case ERWActionEnum.GoTo:
+                        {
+                            var act = actual.Data as ERWGoTo;
+                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
+
+
+                            toClose.ToList().ForEach(x =>
+                            {
+                                if (act.Random) x.Move((int)random.NextInt64(0, (int)MainWindow.Instance.ScreenWidth - x.Width), (int)random.NextInt64(0, (int)MainWindow.Instance.ScreenHeight - x.Height));
+                                else x.Move(act.X, act.Y);
+                            });
+                            break;
+                        }
+                    case ERWActionEnum.Animate:
+                        {
+                            var act = actual.Data as ERWAnimate;
+                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
+
+                            toClose.ToList().ForEach(x =>
+                            {
+                                
+                                int targetFPS = Math.Max(Math.Min(60,act.FPS),1);
+                                double targetFrameTime = 1000.0 / targetFPS;
+
+                                Stopwatch stopwatch = new Stopwatch();
+                                stopwatch.Start();
+
+                                long lastFrameTime = stopwatch.ElapsedMilliseconds;
+
+                                var randomUnique = random.NextDouble();
+
+                                var myIndex = animIndex++;
+
+                                Task.Run(() =>
+                                {
+                                    while (stopwatch.ElapsedMilliseconds < act.Duration * 1000)
+                                    {
+                                        long currentTime = stopwatch.ElapsedMilliseconds;
+                                        long elapsed = currentTime - lastFrameTime;
+
+                                        if (elapsed >= targetFrameTime)
+                                        {
+                                            lastFrameTime = currentTime;
+
+                                            var dt = new DataTable();
+                                            int xp = x.X, yp = x.Y, perc = -1;
+
+                                            var args = new object[]
+                                            {
+                                                AudioPosition.TotalMilliseconds / 1000.0,
+                                                stopwatch.ElapsedMilliseconds/1000.0,
+                                                randomUnique,
+                                                myIndex
+                                            };
+
+                                            if (!string.IsNullOrEmpty(act.X))
+                                                xp = Convert.ToInt32(new NCalc.Expression(string.Format(act.X, [..args,random.NextDouble()] )).Evaluate());
+                                            if (!string.IsNullOrEmpty(act.Y))
+                                                yp = Convert.ToInt32(new NCalc.Expression(string.Format(act.Y, [.. args, random.NextDouble()])).Evaluate());
+                                            if (!string.IsNullOrEmpty(act.Percentage))
+                                                perc = Convert.ToInt32(new NCalc.Expression(string.Format(act.Percentage, [.. args, random.NextDouble()] )).Evaluate());
+
+                                            if (xp != x.X || yp != x.Y) x.Move(xp, yp);
+                                            if (perc != -1) x.SetProgressBarPercentage(perc);
+                                        }
+                                        else
+                                        {
+                                            int sleepTime = (int)(targetFrameTime - elapsed);
+                                            if (sleepTime > 12)
+                                                Thread.Sleep(sleepTime - 1);
+                                            else
+                                                Thread.Yield();
+                                        }
+                                    }
+                                });
+                            });
+                            break;
+                        }
+                }
+                
             }
         }
 
@@ -418,7 +533,7 @@ namespace ERMEditor
 
 
 
-                (src.DataContext as ERMTimestamp).Timestamp = TimeSpan.FromSeconds(TimeUtil.PositionToTime(finalX, Zoom));
+                (src.DataContext as ERWTimestamp).Timestamp = TimeSpan.FromSeconds(TimeUtil.PositionToTime(finalX, Zoom));
             
 
                     //src.CaptureMouse();
@@ -434,11 +549,12 @@ namespace ERMEditor
                 }
             
         }
-
+        int animIndex = 0;
         private void Preview_Click(object sender, RoutedEventArgs e)
         {
+            animIndex = 0;
             IsPreview = true;
-            List<ERMTimestamp> ordered = MainWindow.Config.Timestamps.OrderBy((t) => t.Timestamp).ToList();
+            List<ERWTimestamp> ordered = MainWindow.Config.Timestamps.OrderBy((t) => t.Timestamp).ToList();
             enumerator = ordered.GetEnumerator();
             enumerator.MoveNext();
             last = enumerator.Current;
@@ -476,7 +592,7 @@ namespace ERMEditor
 
         public void Execute(object? parameter)
         {
-            MainWindow.Instance.SelectedTimestamp = parameter as ERMTimestamp;
+            MainWindow.Instance.SelectedTimestamp = parameter as ERWTimestamp;
         }
     }
 
@@ -486,17 +602,46 @@ namespace ERMEditor
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values[0] == DependencyProperty.UnsetValue) return string.Empty;
-            var timestamp = values[0] as ERMTimestamp;
+            var timestamp = values[0] as ERWTimestamp;
             switch (timestamp.Action)
             {
-                case ERMActionEnum.ShowWindow:
-                    string name = (timestamp.Data as ERMShowWindow).WindowIdentifier;
-                    if (string.IsNullOrWhiteSpace(name)) name = "(NULL)";
-                    return $"{name}";
-                case ERMActionEnum.ClearWindow:
-                    ERMClearWindow w = timestamp.Data as ERMClearWindow;
-                    if (w is null) return "CLEAR";
-                    return $"CLEAR{(w.Group != string.Empty ? $" {w.Group}" : "")}";
+                case ERWActionEnum.ShowWindow:
+                    {
+                        var w = (timestamp.Data as ERWShowWindow);
+                        string name = w.WindowIdentifier;
+                        if (string.IsNullOrWhiteSpace(name)) name = "(NULL)";
+                        return $"{name}{(w.Group != string.Empty ? $" - {w.Group}" : "")}";
+                    }
+                case ERWActionEnum.ClearWindow:
+                    {
+                        var w = timestamp.Data as ERWClearWindow;
+                        if (w is null) return "CLEAR";
+                        return $"CLEAR{(w.Group != string.Empty ? $" - {w.Group}" : "")}";
+                    }
+                case ERWActionEnum.SetPercentage:
+                    {
+                        var w = timestamp.Data as ERWSetPercentage;
+                        if (w is null) return "P% (NULL)";
+                        return $"P%{(w.Group != string.Empty ? $" - {w.Group}" : " (NULL)")}";
+                    }
+                case ERWActionEnum.SetVisibility:
+                    {
+                        var w = timestamp.Data as ERWSetVisibility;
+                        if (w is null) return "SHOW (NULL)";
+                        return $"{(w.Visible?"SHOW":"HIDE")}{(w.Group != string.Empty ? $" - {w.Group}" : " (NULL)")}";
+                    }
+                case ERWActionEnum.GoTo:
+                    {
+                        var w = timestamp.Data as ERWGoTo;
+                        if (w is null) return "GOTO (NULL)";
+                        return $"GOTO{(w.Group != string.Empty ? $" - {w.Group}" : " (NULL)")}";
+                    }
+                case ERWActionEnum.Animate:
+                    {
+                        var w = timestamp.Data as ERWAnimate;
+                        if (w is null) return "ANIM (NULL)";
+                        return $"ANIM{(w.Group != string.Empty ? $" - {w.Group}" : " (NULL)")}";
+                    }
                 default:
                     return string.Empty;
             }

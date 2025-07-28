@@ -18,9 +18,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using static Vanara.PInvoke.Shell32;
 using System.Media;
-using static Shared.ERMWindow;
+using static Shared.ERWWindow;
 
-namespace ERM
+namespace ERW
 {
     public static class IconExtension
     {
@@ -92,6 +92,8 @@ namespace ERM
         public Task task;
         RECT diagRect;
 
+        public ERWShowWindow? AssociatedAction { get; set; }
+
         // DaddyDialog
         // A dialog placed away from the screen. Used to hide the child dialogs before HWND is aquired and they are moved to the required position.
         public static TaskDialog? DaddyDialog = null;
@@ -103,13 +105,15 @@ namespace ERM
             DaddyDialog.Move(-9999, -9999);
             DaddyDialog.HideCompletely();
         }
-        public TaskDialog(ERMWindow wnd) : this(
+        public TaskDialog(ERWWindow wnd, ERWShowWindow? assoc = null) : this(
             wnd.WindowTitle, wnd.Content, wnd.ButtonsConverted.ToArray(), 
             wnd.Title, wnd.Icon, wnd.Footer, true,
             wnd.CustomSound, wnd.EnableProgressBar, wnd.ProgressBarType, 
             wnd.ProgressBarPercentage
             ) 
-        { }
+        {
+            AssociatedAction = assoc;
+        }
     
         public TaskDialog(string windowtitle, string body, TASKDIALOG_BUTTON_FIXED[]? buttons = null, 
             string title = "", TaskDialogIconExtended icon = 0, string? footer = null, bool foreground = true,
@@ -380,6 +384,14 @@ namespace ERM
             SetWindowLong(HWND, WindowLongFlags.GWL_EXSTYLE, GetWindowLong(HWND, WindowLongFlags.GWL_EXSTYLE) | (int)WindowStylesEx.WS_EX_TOOLWINDOW); // set the style
             ShowWindow(HWND, ShowWindowCommand.SW_SHOW);
             ShowWindow(HWND, ShowWindowCommand.SW_HIDE);
+        }
+
+        public void ShowCompletely()
+        {
+            if (HWND == HWND.NULL) return;
+
+            SetWindowLong(HWND, WindowLongFlags.GWL_EXSTYLE, GetWindowLong(HWND, WindowLongFlags.GWL_EXSTYLE) ^ (int)WindowStylesEx.WS_EX_TOOLWINDOW); // remove the style
+            ShowWindow(HWND, ShowWindowCommand.SW_SHOW);
         }
 
         public TaskDialog Center()

@@ -1,8 +1,9 @@
-﻿using ERM;
+﻿using ERW;
 using Shared;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -22,12 +23,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xaml;
-using static ERMEditor.S2CPositionXConverter;
+using static ERWEditor.S2CPositionXConverter;
 using static Vanara.PInvoke.ComCtl32;
 using static Vanara.PInvoke.User32.RAWINPUT;
 using Point = System.Windows.Point;
 
-namespace ERMEditor
+namespace ERWEditor
 {
     public class DefinedWindowIdentifierConverter : IValueConverter
     {
@@ -47,16 +48,16 @@ namespace ERMEditor
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values[0] == DependencyProperty.UnsetValue || values[0] == null || MainWindow.Instance.SelectedType != "Shared.ERMShowWindow") return (double)0;
-            ERMTimestamp tmp = values[0] as ERMTimestamp;
-            ERMShowWindow data = tmp.Data as ERMShowWindow;
+            if (values[0] == DependencyProperty.UnsetValue || values[0] == null || MainWindow.Instance.SelectedType != "Shared.ERWShowWindow") return (double)0;
+            ERWTimestamp tmp = values[0] as ERWTimestamp;
+            ERWShowWindow data = tmp.Data as ERWShowWindow;
             TaskDialogDesign taskDialogDesign = values[3] as TaskDialogDesign;
             ShowWindowControl showWindowCtrl = values[4] as ShowWindowControl;
             if (data is null) return 0;
 
             double canvasWidth = showWindowCtrl.TimestampCanvas.ActualWidth;
 
-            double x = ERM.TaskDialog.RelativeToAbsolute(
+            double x = ERW.TaskDialog.RelativeToAbsolute(
                 (int)data.X, 
                 data.IsRelative ? data.XAxis : RelativeAxis.Start, 
                 data.IsRelative ? data.SelfXAxis : RelativeAxis.Start, 
@@ -78,16 +79,16 @@ namespace ERMEditor
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            if (values[0] == DependencyProperty.UnsetValue || values[0] == null || MainWindow.Instance.SelectedType != "Shared.ERMShowWindow") return (double)0;
-            ERMTimestamp tmp = values[0] as ERMTimestamp;
-            ERMShowWindow data = tmp.Data as ERMShowWindow;
+            if (values[0] == DependencyProperty.UnsetValue || values[0] == null || MainWindow.Instance.SelectedType != "Shared.ERWShowWindow") return (double)0;
+            ERWTimestamp tmp = values[0] as ERWTimestamp;
+            ERWShowWindow data = tmp.Data as ERWShowWindow;
             TaskDialogDesign taskDialogDesign = values[3] as TaskDialogDesign;
             ShowWindowControl showWindowCtrl = values[4] as ShowWindowControl;
             if (data is null) return 0;
 
             double screenheight = showWindowCtrl.TimestampCanvas.ActualHeight;
 
-            double y = ERM.TaskDialog.RelativeToAbsolute(
+            double y = ERW.TaskDialog.RelativeToAbsolute(
                 (int)data.Y,
                 data.IsRelative ? data.YAxis : RelativeAxis.Start,
                 data.IsRelative ? data.SelfYAxis : RelativeAxis.Start,
@@ -128,16 +129,16 @@ namespace ERMEditor
 
         public static MainWindow Instance { get => (Window.GetWindow(App.Current.MainWindow) as MainWindow); }
 
-        public ERMWindow? SelectedWindow { get; set; }
+        public ERWWindow? SelectedWindow { get; set; }
         public int SelectedWindowIndex { get; set; }
 
-        public ERMTimestamp? SelectedTimestamp { get; set; }
-        public int SelectedTimestampIndex { get => Config.Timestamps.OrderBy(x => x.Timestamp).ToList().IndexOf(SelectedTimestamp as ERMTimestamp); }
+        public ERWTimestamp? SelectedTimestamp { get; set; }
+        public int SelectedTimestampIndex { get => Config.Timestamps.OrderBy(x => x.Timestamp).ToList().IndexOf(SelectedTimestamp as ERWTimestamp); }
 
-        public ERMTimestamp? PreviousTimestamp { get => SelectedTimestampIndex >= 1 ? Config.Timestamps.OrderBy(x => x.Timestamp).ToList()[SelectedTimestampIndex-1] : null; }
+        public ERWTimestamp? PreviousTimestamp { get => SelectedTimestampIndex >= 1 ? Config.Timestamps.OrderBy(x => x.Timestamp).ToList()[SelectedTimestampIndex-1] : null; }
         public bool HasPreviousTimestamp { get => SelectedTimestampIndex >= 1; }
 
-        public ERMTimestamp? PreviousTimestamp2 { get => SelectedTimestampIndex >= 2 ? Config.Timestamps.OrderBy(x => x.Timestamp).ToList()[SelectedTimestampIndex - 2] : null; }
+        public ERWTimestamp? PreviousTimestamp2 { get => SelectedTimestampIndex >= 2 ? Config.Timestamps.OrderBy(x => x.Timestamp).ToList()[SelectedTimestampIndex - 2] : null; }
         
         public bool HasPreviousTimestamp2 { get => SelectedTimestampIndex >= 2; }
 
@@ -150,7 +151,6 @@ namespace ERMEditor
 
 
         private ShowWindowControl? ctrl = null;
-        private ClearWindowControl? cwctrl = null;
         [DependsOn(nameof(SelectedTimestamp))]
         public UIElement? SelectedControl
         {
@@ -158,15 +158,21 @@ namespace ERMEditor
             {
                 switch (SelectedTimestamp?.Action)
                 {
-                    case ERMActionEnum.ShowWindow:
+                    case ERWActionEnum.ShowWindow:
                         if (ctrl is null) return null;
 
                         ctrl.DataContext = this;
                         return ctrl;
-                    case ERMActionEnum.ClearWindow: 
-                        if (cwctrl is null) return null;
-                        cwctrl.DataContext = this;
-                        return cwctrl;
+                    case ERWActionEnum.ClearWindow: 
+                        return new ClearWindowControl() { DataContext = this };
+                    case ERWActionEnum.SetPercentage:
+                        return new SetPercentControl() { DataContext = this };
+                    case ERWActionEnum.SetVisibility:
+                        return new SetVisibilityControl() { DataContext = this };
+                    case ERWActionEnum.GoTo:
+                        return new GoToControl() { DataContext = this };
+                    case ERWActionEnum.Animate:
+                        return new AnimateControl() { DataContext = this };
 
                     default:
                         return null ;
@@ -174,15 +180,15 @@ namespace ERMEditor
             }
         }
 
-        public static ERMJson Config { get; set; } = new ERMJson();
+        public static ERWJson Config { get; set; } = new ERWJson();
 
         public MainWindow()
         {
             InitializeComponent();
-            ERM.TaskDialog.CreateDaddyDialog();
+            ERW.TaskDialog.CreateDaddyDialog();
             this.DataContext = this;
             ctrl = new ShowWindowControl() { DataContext = this };
-            cwctrl = new ClearWindowControl() { DataContext = this };
+
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -211,7 +217,7 @@ namespace ERMEditor
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
-            Config.DefinedWindows.Add(new ERMWindow());
+            Config.DefinedWindows.Add(new ERWWindow());
         }
 
         private void AppBarButton_Click_1(object sender, RoutedEventArgs e)
@@ -232,7 +238,7 @@ namespace ERMEditor
         }
 
 
-        internal void DeleteTimestamp(ERMTimestamp timestamp)
+        internal void DeleteTimestamp(ERWTimestamp timestamp)
         {
             Config.Timestamps.Remove(timestamp);
         }
@@ -256,24 +262,24 @@ namespace ERMEditor
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return String.Join(";",(value as BindingList<ERMButton>).Select(x => x.ButtonText)); 
+            return String.Join(";",(value as BindingList<ERWButton>).Select(x => x.ButtonText)); 
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return new BindingList<ERMButton>((value as string).Split(";").Select(x => new ERMButton() { ButtonText= x }).ToList());
+            return new BindingList<ERWButton>((value as string).Split(";").Select(x => new ERWButton() { ButtonText= x }).ToList());
         }
     }
 
 
     public class WindowConverter : IValueConverter
     {
-        public static ERMWindow FindWindow(string Identifier)
+        public static ERWWindow? FindWindow(string Identifier)
         {
             return MainWindow.Config.DefinedWindows.FirstOrDefault((d) => d.Identifier == Identifier, null);
         }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return FindWindow(value as string);
         }

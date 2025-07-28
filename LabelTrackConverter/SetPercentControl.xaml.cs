@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace ERWEditor
 {
     /// <summary>
-    /// Interaction logic for ClearWindowControl.xaml
+    /// Interaction logic for SetPercentControl.xaml
     /// </summary>
-    public partial class ClearWindowControl : UserControl
+    public partial class SetPercentControl : UserControl
     {
-        public ClearWindowControl()
+        public SetPercentControl()
         {
             InitializeComponent();
         }

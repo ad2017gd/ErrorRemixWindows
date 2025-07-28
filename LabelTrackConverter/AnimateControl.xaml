@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="ERWEditor.AnimateControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ERWEditor" xmlns:ui="http://schemas.modernwpf.com/2019"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel>
+        <TextBlock Margin="0,0,0,16" TextWrapping="Wrap">Expressions are calculated using https://github.com/ncalc/ncalc. You can use "{0}" to get time since song start, or "{1}" to get time since animation start (seconds). {2} is a constant random value (0-1), {3} is an unique ID for each animation instance (per window!) starting from 0 and {4} is another random value that changes every animation frame. Example: "Sin({1}*5)*100+200"</TextBlock>
+        <TextBox
+ui:ControlHelper.PlaceholderText="Window group" 
+ui:ControlHelper.Header="Window group" 
+Text="{Binding SelectedTimestamp.Data.Group}"></TextBox>
+        <TextBox Margin="0,0,8,0" ui:ControlHelper.PlaceholderText="(none)" 
+ui:ControlHelper.Header="Expression for X" 
+Text="{Binding SelectedTimestamp.Data.X}"></TextBox>
+
+        <TextBox ui:ControlHelper.PlaceholderText="(none)" 
+ui:ControlHelper.Header="Expression for Y" 
+Text="{Binding SelectedTimestamp.Data.Y}"></TextBox>
+
+        <TextBox ui:ControlHelper.PlaceholderText="(none)" 
+ui:ControlHelper.Header="Expression for percentage" 
+Text="{Binding SelectedTimestamp.Data.Percentage}"></TextBox>
+
+        <ui:NumberBox ui:ControlHelper.PlaceholderText="(none)" 
+ui:ControlHelper.Header="Duration (seconds)" Margin="0,8,0,0"
+Value="{Binding SelectedTimestamp.Data.Duration}"></ui:NumberBox>
+        <ui:NumberBox ui:ControlHelper.PlaceholderText="(none)" 
+ui:ControlHelper.Header="Animation FPS (1-60, high values affect CPU)" Margin="0,0,0,0" Minimum="1" Maximum="60"
+Value="{Binding SelectedTimestamp.Data.FPS}"></ui:NumberBox>
+
+    </StackPanel>
+</UserControl>

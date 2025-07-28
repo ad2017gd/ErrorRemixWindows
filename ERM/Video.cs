@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Vanara.PInvoke;
 using static Vanara.PInvoke.User32;
-namespace ERM
+namespace ERW
 {
     internal class Video
     {
