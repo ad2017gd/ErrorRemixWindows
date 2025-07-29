@@ -194,16 +194,17 @@ namespace Shared
         SetPercentage,
         SetVisibility,
         GoTo,
-        Animate
+        Animate,
+        Stop
     }
 
-    [JsonDerivedType(typeof(ERWShowWindow))]
-    [JsonDerivedType(typeof(ERWClearWindow))]
-    [JsonDerivedType(typeof(ERWSetPercentage))]
-    [JsonDerivedType(typeof(ERWSetVisibility))]
-    [JsonDerivedType(typeof(ERWGoTo))]
-    [JsonDerivedType(typeof(ERWAnimate))]
-
+    [JsonDerivedType(typeof(ERWShowWindow), "sw")]
+    [JsonDerivedType(typeof(ERWClearWindow), "cw")]
+    [JsonDerivedType(typeof(ERWSetPercentage), "sp")]
+    [JsonDerivedType(typeof(ERWSetVisibility), "sv")]
+    [JsonDerivedType(typeof(ERWGoTo), "gt")]
+    [JsonDerivedType(typeof(ERWAnimate), "an")]
+    [JsonDerivedType(typeof(ERWStop), "st")]
     public abstract class ERWAction : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -295,6 +296,11 @@ namespace Shared
         }
     }
 
+    public class ERWStop : ERWAction
+    {
+
+    }
+
 
 
     public class ERWJson : INotifyPropertyChanged
@@ -305,6 +311,7 @@ namespace Shared
             
         };
         public string MP3Location { get; set; } = string.Empty;
+        public string MP4Location { get; set; } = string.Empty;
 
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null) =>

@@ -14,7 +14,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,7 +61,43 @@ namespace ERWEditor
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            return null;
+            var timestamp = values[0] as ERWTimestamp;
+            if (values[1] is null) return new Thickness(0);
+            var height = ((double)values[1]) * 0.65;
+            var available = MainWindow.Instance.AudioTimestampsElement.AudioAndTimestamps.ActualHeight;
+            int fit = (int)(available / height);
+
+
+            var index = MainWindow.Instance.Config.Timestamps.IndexOf(timestamp);
+
+            return new Thickness(0, height * (index % fit), 0, 0);
+
+        }
+
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    
+    public class LineColorConverter : IMultiValueConverter
+    {
+        [DllImport("shlwapi.dll")]
+        public static extern int ColorHLSToRGB(int H, int L, int S);
+
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            var timestamp = values[0] as ERWTimestamp;
+            var index = MainWindow.Instance.Config.Timestamps.IndexOf(timestamp);
+            var color = ColorHLSToRGB($"{index}{System.Convert.ToString(index,2)}{index+1}".GetHashCode()%240, 180, 240);
+
+            var sdcolor = System.Drawing.Color.FromArgb(color);
+            var brush = new SolidColorBrush(Color.FromRgb(sdcolor.R, sdcolor.G, sdcolor.B));
+            brush.Freeze();
+
+            return brush;
 
         }
 
@@ -153,17 +191,39 @@ namespace ERWEditor
     {
 
         public bool IsPreview { get; set; } = false;
-        private List<TaskDialog> opened = new List<TaskDialog>();
-        private IEnumerator<ERWTimestamp> enumerator;
-        private ERWTimestamp last;
+        
 
-        [DependsOn(nameof(MainWindow.Config))]
-        public ERWJson Config { get => MainWindow.Config; }
+        [DependsOn(nameof(MainWindow.Instance.Config))]
+        public ERWJson Config { get => MainWindow.Instance.Config; }
+
+        [DependsOn(nameof(Config))]
+        public Player Player { get; set; }
 
         public AudioTimestamps()
         {
             InitializeComponent();
             this.DataContext = this;
+            Player = new Player(Config);
+            Player.OnStop += () =>
+            {
+                if (AudioOut is not null) AudioOut.Stop();
+            };
+
+            MainWindow.Instance.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == "Config")
+                {
+                    OnPropertyChanged(nameof(Config));
+
+                    MainWindow.Instance.Config.PropertyChanged += Config_PropertyChanged;
+                    Player = new Player(Config);
+                    Player.OnStop += () =>
+                    {
+                        if (AudioOut is not null) AudioOut.Stop();
+                    };
+                }
+            };
+
             AudioPositionPropertyChangedTimer.Interval = new TimeSpan(0, 0, 0, 0, 20);
             AudioPositionPropertyChangedTimer.Tick += (_, _) =>
             {
@@ -171,7 +231,7 @@ namespace ERWEditor
                 OnAudioPositionChanged();
             };
             AudioPositionPropertyChangedTimer.Start();
-            MainWindow.Config.PropertyChanged += Config_PropertyChanged;
+            MainWindow.Instance.Config.PropertyChanged += Config_PropertyChanged;
             TimestampsGrid.MouseDown += TimestampsGrid_MouseDown;
             TimestampsGrid.MouseUp += TimestampsGrid_MouseUp;
         }
@@ -193,7 +253,10 @@ namespace ERWEditor
             {
                 Point pos = e.GetPosition(TimestampsGrid);
                 if (Reader is null) return;
-                Reader.SetPosition(TimeSpan.FromSeconds(TimeUtil.PositionToTime(pos.X, Zoom)));
+                var ts = TimeSpan.FromSeconds(TimeUtil.PositionToTime(pos.X, Zoom));
+                Reader.SetPosition(ts);
+
+
 
                 wasPressed = true;
             }
@@ -220,151 +283,10 @@ namespace ERWEditor
                 return TimeSpan.Zero;
             } }
 
-
+        DateTime last = DateTime.Now;
         public void OnAudioPositionChanged()
         {
-            if (last is null) return;
-            if(AudioPosition > last.Timestamp)
-            {
-                var actual = last;
-                enumerator.MoveNext();
-                last = enumerator.Current;
-
-
-                var random = new Random();
-                switch (actual.Action)
-                {
-                    case ERWActionEnum.ShowWindow:
-                        {
-                            var act = actual.Data as ERWShowWindow;
-                            Task.Run(() =>
-                            {
-                                var wnd = WindowConverter.FindWindow(act.WindowIdentifier);
-                                if (wnd is null) return;
-                                var task = new ERW.TaskDialog(wnd, act);
-                                opened.Add(task);
-                                task.WaitAsyncForHWND().ContinueWith((t) =>
-                                {
-                                    if (act.IsRelative)
-                                    {
-                                        task.MoveRelative(act.X, act.Y, act.XAxis, act.YAxis, act.SelfXAxis, act.SelfYAxis);
-                                    }
-                                    else
-                                    {
-                                        task.Move(act.X, act.Y);
-                                    }
-                                });
-
-                            });
-                            break;
-                        }
-                    case ERWActionEnum.ClearWindow:
-                        {
-                            var act = actual.Data as ERWClearWindow;
-                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
-
-                            toClose.ToList().ForEach(x => x.Close());
-                            break;
-                        }
-                    case ERWActionEnum.SetPercentage:
-                        {
-                            var act = actual.Data as ERWSetPercentage;
-                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
-
-                            toClose.ToList().ForEach(x => x.SetProgressBarPercentage(act.Percentage));
-                            break;
-                        }
-                    case ERWActionEnum.SetVisibility:
-                        {
-                            var act = actual.Data as ERWSetVisibility;
-                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
-
-                            toClose.ToList().ForEach(x => {
-                                if (act.Visible) x.ShowCompletely(); else x.HideCompletely();
-                                    });
-                            break;
-                        }
-                    case ERWActionEnum.GoTo:
-                        {
-                            var act = actual.Data as ERWGoTo;
-                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
-
-
-                            toClose.ToList().ForEach(x =>
-                            {
-                                if (act.Random) x.Move((int)random.NextInt64(0, (int)MainWindow.Instance.ScreenWidth - x.Width), (int)random.NextInt64(0, (int)MainWindow.Instance.ScreenHeight - x.Height));
-                                else x.Move(act.X, act.Y);
-                            });
-                            break;
-                        }
-                    case ERWActionEnum.Animate:
-                        {
-                            var act = actual.Data as ERWAnimate;
-                            var toClose = string.IsNullOrEmpty(act.Group) ? opened : opened.Where(x => x.AssociatedAction?.Group == act.Group);
-
-                            toClose.ToList().ForEach(x =>
-                            {
-                                
-                                int targetFPS = Math.Max(Math.Min(60,act.FPS),1);
-                                double targetFrameTime = 1000.0 / targetFPS;
-
-                                Stopwatch stopwatch = new Stopwatch();
-                                stopwatch.Start();
-
-                                long lastFrameTime = stopwatch.ElapsedMilliseconds;
-
-                                var randomUnique = random.NextDouble();
-
-                                var myIndex = animIndex++;
-
-                                Task.Run(() =>
-                                {
-                                    while (stopwatch.ElapsedMilliseconds < act.Duration * 1000)
-                                    {
-                                        long currentTime = stopwatch.ElapsedMilliseconds;
-                                        long elapsed = currentTime - lastFrameTime;
-
-                                        if (elapsed >= targetFrameTime)
-                                        {
-                                            lastFrameTime = currentTime;
-
-                                            var dt = new DataTable();
-                                            int xp = x.X, yp = x.Y, perc = -1;
-
-                                            var args = new object[]
-                                            {
-                                                AudioPosition.TotalMilliseconds / 1000.0,
-                                                stopwatch.ElapsedMilliseconds/1000.0,
-                                                randomUnique,
-                                                myIndex
-                                            };
-
-                                            if (!string.IsNullOrEmpty(act.X))
-                                                xp = Convert.ToInt32(new NCalc.Expression(string.Format(act.X, [..args,random.NextDouble()] )).Evaluate());
-                                            if (!string.IsNullOrEmpty(act.Y))
-                                                yp = Convert.ToInt32(new NCalc.Expression(string.Format(act.Y, [.. args, random.NextDouble()])).Evaluate());
-                                            if (!string.IsNullOrEmpty(act.Percentage))
-                                                perc = Convert.ToInt32(new NCalc.Expression(string.Format(act.Percentage, [.. args, random.NextDouble()] )).Evaluate());
-
-                                            if (xp != x.X || yp != x.Y) x.Move(xp, yp);
-                                            if (perc != -1) x.SetProgressBarPercentage(perc);
-                                        }
-                                        else
-                                        {
-                                            int sleepTime = (int)(targetFrameTime - elapsed);
-                                            if (sleepTime > 12)
-                                                Thread.Sleep(sleepTime - 1);
-                                            else
-                                                Thread.Yield();
-                                        }
-                                    }
-                                });
-                            });
-                            break;
-                        }
-                }
-                
-            }
+            Player.OnAudioPositionChanged(AudioPosition);
         }
 
         public TimeSpan AudioLength
@@ -388,20 +310,31 @@ namespace ERWEditor
 
         private void Config_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if(e.PropertyName == nameof(Config.MP3Location))
+
+            if (e.PropertyName == nameof(Config.MP4Location))
             {
-                try
-                {
-                    if(AudioOut is not null) AudioOut.Stop();
-                } catch { }
+                //UpdateMP3();
+
+            }
+
+        }
+        public void UpdateMP3()
+        {
+            try
+            {
+                if (AudioOut is not null) AudioOut.Stop();
+
+
                 Reader = CodecFactory.Instance.GetCodec(Config.MP3Location);
                 AudioOut = new WasapiOut() { Latency = 100, Device = new MMDeviceEnumerator().GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia) };
                 AudioOut.Initialize(Reader);
 
-                Config.Timestamps.Clear();
+
+                //Config.Timestamps.Clear();
 
                 GenWaveformsAsync();
             }
+            catch { }
         }
 
         public void GenWaveformsAsync()
@@ -414,10 +347,12 @@ namespace ERWEditor
             
         public void GenWaveforms()
         {
-            if (Config is null) return;
+            bool configNull = false;
+            Dispatcher.Invoke(() => configNull = Config is null);
+            if (configNull) return;
 
-
-            var tReader = CodecFactory.Instance.GetCodec(Config.MP3Location);
+            IWaveSource tReader = null;
+            Dispatcher.Invoke(() => tReader = CodecFactory.Instance.GetCodec(Config.MP3Location));
 
             var mono = tReader.ToSampleSource().ToMono();
             float[] data = new float[mono.Length];
@@ -470,6 +405,18 @@ namespace ERWEditor
                 Config.MP3Location = diag.FileName;
             }
         }
+        private void ChooseMP4Button_Click(object sender, RoutedEventArgs e)
+        {
+            var diag = new OpenFileDialog();
+            diag.Filter = "MP4 video files|*.mp4";
+            diag.DefaultExt = ".mp4";
+
+
+            if (diag.ShowDialog() ?? false)
+            {
+                Config.MP4Location = diag.FileName;
+            }
+        }
 
         public DispatcherTimer AudioPositionPropertyChangedTimer { get; set; } = new DispatcherTimer(DispatcherPriority.Render);
 
@@ -497,10 +444,7 @@ namespace ERWEditor
         private void Stop_Click(object sender, RoutedEventArgs e)
         {
             IsPreview = false;
-
-            opened.ForEach((x) => x.Close());
-            opened.Clear();
-
+            Player.Stop();
             //AudioPositionPropertyChangedTimer.Stop();
             try
             {
@@ -549,20 +493,10 @@ namespace ERWEditor
                 }
             
         }
-        int animIndex = 0;
         private void Preview_Click(object sender, RoutedEventArgs e)
         {
-            animIndex = 0;
             IsPreview = true;
-            List<ERWTimestamp> ordered = MainWindow.Config.Timestamps.OrderBy((t) => t.Timestamp).ToList();
-            enumerator = ordered.GetEnumerator();
-            enumerator.MoveNext();
-            last = enumerator.Current;
-            while(last is not null && last.Timestamp < AudioPosition)
-            {
-                enumerator.MoveNext();
-                last = enumerator.Current;
-            }
+            Player.Play(AudioPosition);
             Play();
 
         }
@@ -579,6 +513,7 @@ namespace ERWEditor
                 }
             }
         }
+
     }
 
     public class SelectTimestampCommand : ICommand
@@ -641,6 +576,10 @@ namespace ERWEditor
                         var w = timestamp.Data as ERWAnimate;
                         if (w is null) return "ANIM (NULL)";
                         return $"ANIM{(w.Group != string.Empty ? $" - {w.Group}" : " (NULL)")}";
+                    }
+                case ERWActionEnum.Stop:
+                    {
+                        return $"STOP";
                     }
                 default:
                     return string.Empty;

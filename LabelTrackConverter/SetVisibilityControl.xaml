@@ -11,7 +11,7 @@
         <TextBox
 ui:ControlHelper.PlaceholderText="Window group" 
 ui:ControlHelper.Header="Window group" 
-Text="{Binding SelectedTimestamp.Data.Group}"></TextBox>
+Text="{Binding SelectedTimestamp.Data.Group, UpdateSourceTrigger=PropertyChanged}"></TextBox>
         <CheckBox Content="Visible"
 IsChecked="{Binding SelectedTimestamp.Data.Visible}"></CheckBox>
     </StackPanel>

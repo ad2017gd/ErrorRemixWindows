@@ -10,10 +10,10 @@
         <TextBox
 ui:ControlHelper.PlaceholderText="Window group" 
 ui:ControlHelper.Header="Window group" 
-Text="{Binding SelectedTimestamp.Data.Group}"></TextBox>
+Text="{Binding SelectedTimestamp.Data.Group, UpdateSourceTrigger=PropertyChanged}"></TextBox>
         <ui:NumberBox
 ui:ControlHelper.PlaceholderText="Percentage %" 
 ui:ControlHelper.Header="Percentage" 
-Value="{Binding SelectedTimestamp.Data.Percentage}"></ui:NumberBox>
+Value="{Binding SelectedTimestamp.Data.Percentage, UpdateSourceTrigger=PropertyChanged}"></ui:NumberBox>
     </StackPanel>
 </UserControl>

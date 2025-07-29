@@ -122,12 +122,16 @@ namespace ERW
             )
         {
             var cfg = new TASKDIALOGCONFIG();
+            //var hasOk = buttons is not null ? buttons.Any(x => Marshal.PtrToStringUni(x.pszButtonText).ToLower() == "ok") : false;
+            //var hasCancel = buttons is not null ? buttons.Any(x => Marshal.PtrToStringUni(x.pszButtonText).ToLower() == "cancel") : false;
+
+            //buttons = buttons.Where(x => Marshal.PtrToStringUni(x.pszButtonText).ToLower() != "ok" && Marshal.PtrToStringUni(x.pszButtonText).ToLower() != "cancel").ToArray();
             cfg.pButtons = buttons is not null ? buttons.MarshalToPtr(Marshal.AllocHGlobal, out _) : IntPtr.Zero;
             cfg.cButtons = buttons is not null ? (uint)buttons.Length : 0;
             cfg.Content = body;
             cfg.WindowTitle = windowtitle;
             cfg.Footer = footer ?? "";
-            cfg.dwFlags = TASKDIALOG_FLAGS.TDF_CAN_BE_MINIMIZED;
+            cfg.dwFlags = TASKDIALOG_FLAGS.TDF_CAN_BE_MINIMIZED | TASKDIALOG_FLAGS.TDF_ALLOW_DIALOG_CANCELLATION;
 
 
             if (icon != TaskDialogIconExtended.TD_QUESTION_ICON)

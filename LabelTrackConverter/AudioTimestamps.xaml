@@ -12,15 +12,20 @@
         <ResourceDictionary>
             <local:TimestampConverter x:Key="TimestampConverter"></local:TimestampConverter>
             <local:CursorConverter x:Key="CursorConverter"></local:CursorConverter>
+            <local:LineColorConverter x:Key="LineColorConverter"></local:LineColorConverter>
             <local:TextCenterConverter x:Key="TextCenterConverter"></local:TextCenterConverter>
             <local:SelectTimestampCommand x:Key="SelectTimestampCommand"></local:SelectTimestampCommand>
             <local:DisplayStringConverter x:Key="DisplayStringConverter"></local:DisplayStringConverter>
             <local:TimestampSelectedConverter x:Key="TimestampSelectedConverter"></local:TimestampSelectedConverter>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <ScrollViewer>
         <StackPanel>
             <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="Auto"></ColumnDefinition>
@@ -30,6 +35,11 @@
                     ui:ControlHelper.Header="MP3 audio file" 
                     Text="{Binding Config.MP3Location, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                 <Button Grid.Column="1" VerticalAlignment="Bottom" x:Name="ChooseFileButton" Click="ChooseFileButton_Click">Choose file</Button>
+                <TextBox Grid.Row="1" 
+                    ui:ControlHelper.PlaceholderText="MP4 video file" 
+                    ui:ControlHelper.Header="MP4 video file (optional)" 
+                    Text="{Binding Config.MP4Location, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                <Button Grid.Row="1"  Grid.Column="1" VerticalAlignment="Bottom" x:Name="ChooseMP4Button" Click="ChooseMP4Button_Click">Choose file</Button>
             </Grid>
             <StackPanel Orientation="Horizontal">
                 <Button Margin="0,0,8,0" x:Name="PlayButton" Click="Play_Click">Play</Button>
@@ -86,7 +96,7 @@
                                 </Style>
                             </ItemsControl.ItemContainerStyle>
                         </ItemsControl>
-                        <Grid Panel.ZIndex="2" Grid.Row="1" Height="100">
+                        <Grid x:Name="AudioAndTimestamps" Panel.ZIndex="2" Grid.Row="1" Height="100">
                             <Grid.ContextMenu>
                                 <local:TimestampsContextMenu></local:TimestampsContextMenu>
                             </Grid.ContextMenu>
@@ -138,14 +148,35 @@
                                             <StackPanel.ContextMenu>
                                                 <local:TimestampsContextMenu Timestamp="{Binding Path=PlacementTarget}"></local:TimestampsContextMenu>
                                             </StackPanel.ContextMenu>
-                                            <Rectangle Fill="CornflowerBlue" Width="2" Height="100" />
-                                            <Button PreviewMouseMove="ConfigTimestampsStackPanel_MouseMove" Grid.Column="1" Command="{StaticResource SelectTimestampCommand}" CommandParameter="{Binding}">
+                                            <Rectangle Width="2" Height="100" >
+                                                <Rectangle.Fill>
+                                                    <MultiBinding>
+                                                        <Binding Path="."></Binding>
+                                                        <MultiBinding.Converter>
+                                                            <local:LineColorConverter></local:LineColorConverter>
+                                                        </MultiBinding.Converter>
+                                                    </MultiBinding>
+                                                </Rectangle.Fill>
+                                            </Rectangle>
+                                            <Button Panel.ZIndex="4" VerticalAlignment="Top" PreviewMouseMove="ConfigTimestampsStackPanel_MouseMove" Grid.Column="1" Command="{StaticResource SelectTimestampCommand}" CommandParameter="{Binding}">
                                                 <Button.Content>
                                                     <MultiBinding Converter="{StaticResource DisplayStringConverter}">
                                                         <Binding Path="."></Binding>
                                                         <Binding Path="Data"></Binding>
                                                     </MultiBinding>
                                                 </Button.Content>
+                                                <Button.Margin>
+                                                    <MultiBinding>
+                                                        <Binding Path="."></Binding>
+                                                        <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}"></Binding>
+                                                        <MultiBinding.Converter>
+                                                            <local:ButtonAlignmentConverter></local:ButtonAlignmentConverter>
+                                                        </MultiBinding.Converter>
+                                                    </MultiBinding>
+                                                </Button.Margin>
+                                                <Button.LayoutTransform>
+                                                    <ScaleTransform ScaleX="0.65" ScaleY="0.65"></ScaleTransform>
+                                                </Button.LayoutTransform>
                                             </Button>
                                         </StackPanel>
                                     </DataTemplate>
@@ -188,5 +219,5 @@
                 </ScrollViewer>
             </Border>
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

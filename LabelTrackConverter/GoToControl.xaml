@@ -10,7 +10,7 @@
         <TextBox
 ui:ControlHelper.PlaceholderText="Window group" 
 ui:ControlHelper.Header="Window group" 
-Text="{Binding SelectedTimestamp.Data.Group}"></TextBox>
+Text="{Binding SelectedTimestamp.Data.Group, UpdateSourceTrigger=PropertyChanged}"></TextBox>
         <CheckBox Content="Random position?" IsChecked="{Binding SelectedTimestamp.Data.Random}"></CheckBox>
         <StackPanel Orientation="Horizontal">
             <StackPanel.Style>
@@ -25,11 +25,11 @@ Text="{Binding SelectedTimestamp.Data.Group}"></TextBox>
             </StackPanel.Style>
             <ui:NumberBox Margin="0,0,8,0" ui:ControlHelper.PlaceholderText="X" 
 ui:ControlHelper.Header="X" 
-Value="{Binding SelectedTimestamp.Data.X}"></ui:NumberBox>
+Value="{Binding SelectedTimestamp.Data.X, UpdateSourceTrigger=PropertyChanged}"></ui:NumberBox>
             
             <ui:NumberBox ui:ControlHelper.PlaceholderText="Y" 
 ui:ControlHelper.Header="Y" 
-Value="{Binding SelectedTimestamp.Data.Y}"></ui:NumberBox>
+Value="{Binding SelectedTimestamp.Data.Y, UpdateSourceTrigger=PropertyChanged}"></ui:NumberBox>
         </StackPanel>
         
     </StackPanel>

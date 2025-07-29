@@ -12,6 +12,6 @@
         <TextBox
 ui:ControlHelper.PlaceholderText="Window group" 
 ui:ControlHelper.Header="Window group (leave empty to clear all windows)" 
-Text="{Binding SelectedTimestamp.Data.Group}"></TextBox>
+Text="{Binding SelectedTimestamp.Data.Group, UpdateSourceTrigger=PropertyChanged}"></TextBox>
     </StackPanel>
 </UserControl>

@@ -6,13 +6,13 @@
         xmlns:local="clr-namespace:ERWEditor"
         xmlns:shared="clr-namespace:Shared;assembly=Shared"
         mc:Ignorable="d"
-        
+        Closing="ThisWindow_Closing"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:TitleBar.Background="{DynamicResource ButtonBackground}"
         ui:WindowHelper.UseModernWindowStyle="True"
         x:Name="ThisWindow"
         Background="{DynamicResource SystemControlBackgroundChromeMediumBrush}"
-        Title="Label track converter for ERW" Height="711" Width="1600">
+        Title="Label track converter for ERW" Height="900" Width="1600">
     <Window.Resources>
         <local:ButtonConverter x:Key="ButtonConverter"></local:ButtonConverter>
         <local:WindowConverter x:Key="WindowConverter"></local:WindowConverter>
@@ -23,17 +23,24 @@
     <Grid>
 
         <TabControl SelectionChanged="TabControl_SelectionChanged">
-            <TabItem Header="Windows">
-                <Grid Margin="15,15,15,15">
+            <TabItem Header="Home">
+                <StackPanel Margin="16">
+                    <TextBlock FontSize="36">Welcome to the ErrorRemixWindows editor!</TextBlock>
+
+                    <Button x:Name="OpenSaved" Click="OpenSaved_Click">Open saved config</Button>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Window creator">
+                <Grid Margin="16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"></ColumnDefinition>
                         <ColumnDefinition Width="24"></ColumnDefinition>
                         <ColumnDefinition Width="1*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="4*"></RowDefinition>
                         <RowDefinition Height="12"></RowDefinition>
-                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="5*"></RowDefinition>
                     </Grid.RowDefinitions>
                     <!-- Window position and preview -->
                     <StackPanel Grid.Row="0" Orientation="Vertical">
@@ -152,7 +159,7 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Timestamps">
-                <Grid Margin="15,15,15,15">
+                <Grid Margin="16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"></ColumnDefinition>
                         <ColumnDefinition Width="24"></ColumnDefinition>
@@ -166,10 +173,11 @@
                     </Grid.RowDefinitions>
 
 
-
-                    <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
-                        <local:AudioTimestamps x:Name="AudioTimestampsElement"></local:AudioTimestamps>
-                    </Grid>
+                    <ui:ThemeShadowChrome Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+                        <Grid Background="{DynamicResource SystemControlBackgroundChromeMediumLowBrush}">
+                            <local:AudioTimestamps Margin="8" x:Name="AudioTimestampsElement"></local:AudioTimestamps>
+                        </Grid>
+                    </ui:ThemeShadowChrome>
 
                     <!-- Editor -->
                     <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="1" Grid.ColumnSpan="3">
@@ -184,10 +192,14 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="Export">
-                <Grid Margin="15,15,15,15">
-                    <TextBlock></TextBlock>
-                </Grid>
+            <TabItem Header="Export/Save">
+                <StackPanel Margin="16">
+                    <TextBlock FontSize="36">Export .exe</TextBlock>
+                    <Button x:Name="Export" Click="Export_Click">Export</Button>
+
+                    <TextBlock FontSize="36" Margin="0,16,0,0">Save config to JSON</TextBlock>
+                    <Button x:Name="Save" Click="Save_Click">Save</Button>
+                </StackPanel>
             </TabItem>
         </TabControl>
     </Grid>

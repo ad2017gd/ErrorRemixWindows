@@ -54,7 +54,7 @@ namespace ERWEditor
 
         private void ShowWindow_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            MainWindow.Instance.Config.Timestamps.Add(new ERWTimestamp()
             {
                 Timestamp = timeAtClick,
                 Action = ERWActionEnum.ShowWindow,
@@ -64,7 +64,7 @@ namespace ERWEditor
 
         private void HideWindow_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            MainWindow.Instance.Config.Timestamps.Add(new ERWTimestamp()
             {
                 Timestamp = timeAtClick,
                 Action = ERWActionEnum.ClearWindow,
@@ -74,7 +74,7 @@ namespace ERWEditor
 
         private void SetPercentage_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            MainWindow.Instance.Config.Timestamps.Add(new ERWTimestamp()
             {
                 Timestamp = timeAtClick,
                 Action = ERWActionEnum.SetPercentage,
@@ -84,7 +84,7 @@ namespace ERWEditor
 
         private void SetVisibility_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            MainWindow.Instance.Config.Timestamps.Add(new ERWTimestamp()
             {
                 Timestamp = timeAtClick,
                 Action = ERWActionEnum.SetVisibility,
@@ -94,7 +94,7 @@ namespace ERWEditor
 
         private void SetCoords_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            MainWindow.Instance.Config.Timestamps.Add(new ERWTimestamp()
             {
                 Timestamp = timeAtClick,
                 Action = ERWActionEnum.GoTo,
@@ -104,11 +104,21 @@ namespace ERWEditor
 
         private void Animate_Click(object sender, RoutedEventArgs e)
         {
-            MainWindow.Config.Timestamps.Add(new ERWTimestamp()
+            MainWindow.Instance.Config.Timestamps.Add(new ERWTimestamp()
             {
                 Timestamp = timeAtClick,
                 Action = ERWActionEnum.Animate,
                 Data = new ERWAnimate()
+            });
+        }
+
+        private void Stop_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow.Instance.Config.Timestamps.Add(new ERWTimestamp()
+            {
+                Timestamp = timeAtClick,
+                Action = ERWActionEnum.Stop,
+                Data = new ERWStop()
             });
         }
     }
