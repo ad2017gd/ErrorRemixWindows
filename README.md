@@ -1,5 +1,5 @@
 # ErrorRemixWindows
-<img width="1719" height="1004" alt="image" src="https://github.com/user-attachments/assets/822557d4-ffc6-4395-b855-0f5ca22561ba" />
+<img width="1749" height="969" alt="image" src="https://github.com/user-attachments/assets/0eda5247-307a-433c-a71c-efc4bf7562e3" />
 
 ## Features
 1. Reusable task dialog window builder (with preview)
