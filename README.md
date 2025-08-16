@@ -1,4 +1,5 @@
 # ErrorRemixWindows
+https://github.com/ad2017gd/ErrorRemixWindows/releases/tag/0.1
 <img width="1749" height="969" alt="image" src="https://github.com/user-attachments/assets/0eda5247-307a-433c-a71c-efc4bf7562e3" />
 
 ## Features
